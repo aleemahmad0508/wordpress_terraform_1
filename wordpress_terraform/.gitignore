@@ -25,3 +25,6 @@ terraform.rc
 .env
 
 .terraform.lock.hcl
+
+./key-pair
+
