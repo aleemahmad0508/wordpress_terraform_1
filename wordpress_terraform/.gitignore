@@ -26,5 +26,5 @@ terraform.rc
 
 .terraform.lock.hcl
 
-./key-pair
+.key-pair/
 
