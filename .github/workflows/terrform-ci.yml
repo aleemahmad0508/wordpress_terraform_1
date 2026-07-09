@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: wordpress-terraform
+        working-directory: wordpress_terraform
 
     steps:
       - name: Checkout Repository
