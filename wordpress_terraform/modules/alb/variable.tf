@@ -1,6 +1,4 @@
-variable "ec2_instance_1_id" {}
 
-variable "ec2_instance_2_id" {}
 
 variable "vpc_id" {}
 

@@ -21,68 +21,78 @@ data "aws_ami" "amazon_linux" {
 }
 
 
-resource "aws_instance" "wordpress_1" {
+resource "aws_launch_template" "wordpress_lt" {
 
-  ami           = data.aws_ami.amazon_linux.id
+  name_prefix = "wordpress-lt-"
+
+  image_id      = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
+  key_name      = aws_key_pair.deployer.key_name
 
-  subnet_id = var.private_subnet_1_id
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ssm_profile.name
+  }
 
-  vpc_security_group_ids = [
-    var.security_group_id
-  ]
+  network_interfaces {
+    associate_public_ip_address = false
+    security_groups             = [var.security_group_id]
+  }
 
-  associate_public_ip_address = false
-
-   user_data = templatefile("${path.module}/user_data.sh.tpl", {
+  user_data = base64encode(templatefile("${path.module}/user_data.sh.tpl", {
     efs_dns_name = var.efs_dns_name
     rds_endpoint = var.rds_endpoint
     rds_username = var.rds_username
     rds_password = var.rds_password
     rds_name     = var.rds_name
-  })
+  }))
 
-    key_name =aws_key_pair.deployer.key_name
+  tag_specifications {
 
-    iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
-  
+    resource_type = "instance"
 
-  tags = {
-    Name = "wordpress-instance-1"
+    tags = {
+      Name = "wordpress-asg-instance"
+    }
   }
+
+  update_default_version = true
 }
 
 
-resource "aws_instance" "wordpress_2" {
 
-  ami           = data.aws_ami.amazon_linux.id
-  instance_type = var.instance_type
+resource "aws_autoscaling_group" "wordpress_asg" {
 
-  subnet_id = var.private_subnet_2_id
+  name = "wordpress-asg"
 
-  vpc_security_group_ids = [
-    var.security_group_id
+  desired_capacity = 2
+  min_size         = 2
+  max_size         = 4
+
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
+
+  vpc_zone_identifier = [
+    var.private_subnet_1_id,
+    var.private_subnet_2_id
   ]
 
-  associate_public_ip_address = false
+  target_group_arns = [
+    var.target_group_arn
+  ]
 
-   user_data = templatefile("${path.module}/user_data.sh.tpl", {
-    efs_dns_name = var.efs_dns_name
-    rds_endpoint = var.rds_endpoint
-    rds_username = var.rds_username
-    rds_password = var.rds_password
-    rds_name     = var.rds_name
-  })
-  key_name =aws_key_pair.deployer.key_name
-   
-  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
+  launch_template {
 
+    id      = aws_launch_template.wordpress_lt.id
+    version = "$Latest"
+  }
 
-  tags = {
-    Name = "wordpress-instance-2"
+  tag {
+
+    key                 = "Name"
+    value               = "wordpress-asg-instance"
+    propagate_at_launch = true
   }
 }
-
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"

@@ -23,27 +23,6 @@ variable "efs_dns_name" {
   type        = string
 }
 
-variable "rds_endpoint" {
-  description = "RDS endpoint for the EC2 instance"
-  type        = string
-}
-
-variable "rds_username" {
-  description = "RDS username for the EC2 instance"
-  type        = string
-}
-
-variable "rds_password" {
-  description = "RDS password for the EC2 instance"
-  type        = string
-  sensitive   = true
-}
-
-variable "rds_name" {
-  description = "RDS database name for the EC2 instance"
-  type        = string
-}
-
 
 variable "private_subnet_1_id" {
   description = "Private Subnet 1 ID for EC2"
@@ -53,4 +32,24 @@ variable "private_subnet_1_id" {
 variable "private_subnet_2_id" {
   description = "Private Subnet 2 ID for EC2"
   type        = string
+}
+
+variable "target_group_arn" {
+  type = string
+}
+
+variable "rds_name" {
+  
+}
+
+variable "rds_username" {
+  
+}
+
+variable "rds_endpoint" {
+  
+}
+
+variable "rds_password" {
+  
 }

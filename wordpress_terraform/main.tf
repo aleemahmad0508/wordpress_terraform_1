@@ -44,6 +44,8 @@ module "ec2" {
 
   security_group_id = module.security.ec2_sg_id
 
+  target_group_arn = module.alb.target_group_arn
+
   
 
   efs_dns_name = module.efs.efs_dns_name
@@ -66,9 +68,6 @@ module "alb" {
   alb_security_group_id = module.security.alb_sg_id
 
 
-  ec2_instance_1_id = module.ec2.wordpress_instance_1_id
-  ec2_instance_2_id = module.ec2.wordpress_instance_2_id
-
 }
 
 module "efs" {
@@ -80,9 +79,10 @@ module "efs" {
 }
 
 
+
 terraform {
   backend "s3" {
-    bucket         = "terraform-state-1234bucket"
+    bucket         = "terraform-state-5bucket"
     key            = "wordpress_terraform/terraform.tfstate"
     region         = "us-east-1"
     use_lockfile = true
