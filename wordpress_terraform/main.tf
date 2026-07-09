@@ -82,7 +82,7 @@ module "efs" {
 
 terraform {
   backend "s3" {
-    bucket         = "terraform-state-5bucket"
+    bucket         = "terraform-state-6bucket"
     key            = "wordpress_terraform/terraform.tfstate"
     region         = "us-east-1"
     use_lockfile = true
