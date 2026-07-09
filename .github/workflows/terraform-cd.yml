@@ -6,23 +6,23 @@ on:
       - main
 
 jobs:
-  terraform-cd:
-    name: Terraform Apply
+  terraform:
     runs-on: ubuntu-latest
 
     environment:
       name: production
 
+    defaults:
+      run:
+        working-directory: wordpress-terraform
+
     steps:
-      # Checkout Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      # Configure AWS Credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -30,10 +30,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Initialize Terraform
       - name: Terraform Init
         run: terraform init
 
-      # Apply Terraform
       - name: Terraform Apply
         run: terraform apply -auto-approve
